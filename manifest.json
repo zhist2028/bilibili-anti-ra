@@ -1,0 +1,36 @@
+{
+  "manifest_version": 3,
+  "name": "B站推荐屏蔽 (Bilibili Anti-Feed)",
+  "version": "1.1.0",
+  "description": "登录后仅向白名单接口发送 Cookie，其余接口一律匿名，以此屏蔽哔哩哔哩推荐算法。首页推荐、相关推荐、热门、排行榜接口将被直接拦截，页面上服务端渲染的推荐区域会被隐藏。",
+  "permissions": ["declarativeNetRequest"],
+  "host_permissions": ["*://*.bilibili.com/*"],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_title": "B站推荐屏蔽：点击启用/停用"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://www.bilibili.com/*"],
+      "js": ["content.js"],
+      "run_at": "document_start"
+    },
+    {
+      "matches": ["https://www.bilibili.com/video/*", "https://www.bilibili.com/bangumi/play/*"],
+      "js": ["scrub.js"],
+      "run_at": "document_start",
+      "world": "MAIN"
+    }
+  ],
+  "declarative_net_request": {
+    "rule_resources": [
+      {
+        "id": "bili_rules",
+        "enabled": true,
+        "path": "rules.json"
+      }
+    ]
+  }
+}

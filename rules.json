@@ -1,0 +1,193 @@
+[
+  {
+    "id": 1,
+    "priority": 1,
+    "action": {
+      "type": "modifyHeaders",
+      "requestHeaders": [
+        { "header": "cookie", "operation": "remove" }
+      ]
+    },
+    "condition": {
+      "requestDomains": ["api.bilibili.com"]
+    }
+  },
+  {
+    "id": 2,
+    "priority": 1,
+    "action": {
+      "type": "modifyHeaders",
+      "requestHeaders": [
+        { "header": "cookie", "operation": "remove" }
+      ]
+    },
+    "condition": {
+      "requestDomains": ["www.bilibili.com"],
+      "resourceTypes": ["main_frame"]
+    }
+  },
+
+  {
+    "id": 10,
+    "priority": 2,
+    "action": { "type": "allow" },
+    "condition": {
+      "regexFilter": "^https://api\\.bilibili\\.com/x/web-interface/nav([?/]|$)"
+    }
+  },
+  {
+    "id": 11,
+    "priority": 2,
+    "action": { "type": "allow" },
+    "condition": {
+      "regexFilter": "^https://api\\.bilibili\\.com/x/msgfeed/unread([?]|$)"
+    }
+  },
+  {
+    "id": 12,
+    "priority": 2,
+    "action": { "type": "allow" },
+    "condition": {
+      "regexFilter": "^https://api\\.bilibili\\.com/x/web-interface/dynamic/entrance([?]|$)"
+    }
+  },
+
+  {
+    "id": 20,
+    "priority": 2,
+    "action": { "type": "allow" },
+    "condition": {
+      "regexFilter": "^https://api\\.bilibili\\.com/x/space/"
+    }
+  },
+  {
+    "id": 21,
+    "priority": 2,
+    "action": { "type": "allow" },
+    "condition": {
+      "regexFilter": "^https://api\\.bilibili\\.com/x/polymer/web-space/"
+    }
+  },
+  {
+    "id": 22,
+    "priority": 2,
+    "action": { "type": "allow" },
+    "condition": {
+      "regexFilter": "^https://api\\.bilibili\\.com/x/relation/(stat|modify)([?]|$)"
+    }
+  },
+
+  {
+    "id": 30,
+    "priority": 2,
+    "action": { "type": "allow" },
+    "condition": {
+      "regexFilter": "^https://api\\.bilibili\\.com/x/web-interface/view([?]|$)"
+    }
+  },
+  {
+    "id": 31,
+    "priority": 2,
+    "action": { "type": "allow" },
+    "condition": {
+      "regexFilter": "^https://api\\.bilibili\\.com/x/player/"
+    }
+  },
+  {
+    "id": 32,
+    "priority": 2,
+    "action": { "type": "allow" },
+    "condition": {
+      "regexFilter": "^https://api\\.bilibili\\.com/x/v[12]/dm/"
+    }
+  },
+  {
+    "id": 33,
+    "priority": 2,
+    "action": { "type": "allow" },
+    "condition": {
+      "regexFilter": "^https://api\\.bilibili\\.com/x/v2/reply([?/]|$)"
+    }
+  },
+  {
+    "id": 34,
+    "priority": 2,
+    "action": { "type": "allow" },
+    "condition": {
+      "regexFilter": "^https://api\\.bilibili\\.com/x/web-interface/archive/(has/like|coins|relation|like|like/tripple)([?]|$)"
+    }
+  },
+  {
+    "id": 35,
+    "priority": 2,
+    "action": { "type": "allow" },
+    "condition": {
+      "regexFilter": "^https://api\\.bilibili\\.com/x/web-interface/coin/add([?]|$)"
+    }
+  },
+  {
+    "id": 36,
+    "priority": 2,
+    "action": { "type": "allow" },
+    "condition": {
+      "regexFilter": "^https://api\\.bilibili\\.com/x/v[23]/fav/"
+    }
+  },
+  {
+    "id": 37,
+    "priority": 2,
+    "action": { "type": "allow" },
+    "condition": {
+      "regexFilter": "^https://api\\.bilibili\\.com/x/(v2/history/report|click-interface/web/heartbeat)([?]|$)"
+    }
+  },
+  {
+    "id": 38,
+    "priority": 2,
+    "action": { "type": "allow" },
+    "condition": {
+      "regexFilter": "^https://api\\.bilibili\\.com/pgc/player/"
+    }
+  },
+
+  {
+    "id": 101,
+    "priority": 1,
+    "action": { "type": "block" },
+    "condition": {
+      "regexFilter": "^https://api\\.bilibili\\.com/x/web-interface/(wbi/)?index/top/(feed/)?rcmd([?]|$)"
+    }
+  },
+  {
+    "id": 102,
+    "priority": 1,
+    "action": { "type": "block" },
+    "condition": {
+      "regexFilter": "^https://api\\.bilibili\\.com/x/web-interface/archive/related([?]|$)"
+    }
+  },
+  {
+    "id": 103,
+    "priority": 1,
+    "action": { "type": "block" },
+    "condition": {
+      "regexFilter": "^https://api\\.bilibili\\.com/x/web-interface/popular([?/]|$)"
+    }
+  },
+  {
+    "id": 104,
+    "priority": 1,
+    "action": { "type": "block" },
+    "condition": {
+      "regexFilter": "^https://api\\.bilibili\\.com/x/web-interface/ranking([?/]|$)"
+    }
+  },
+  {
+    "id": 105,
+    "priority": 1,
+    "action": { "type": "block" },
+    "condition": {
+      "regexFilter": "^https://api\\.bilibili\\.com/x/web-interface/index/ogv/rcmd([?]|$)"
+    }
+  }
+]
