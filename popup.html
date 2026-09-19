@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <style>
+    body {
+      width: 260px;
+      margin: 0;
+      padding: 14px 16px;
+      font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+      font-size: 13px;
+      color: #18191c;
+    }
+    h1 {
+      margin: 0 0 10px;
+      font-size: 15px;
+      color: #fb7299;
+    }
+    label {
+      display: block;
+      padding: 8px 10px;
+      margin-bottom: 6px;
+      border: 1px solid #e3e5e7;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    label:hover {
+      border-color: #fb7299;
+    }
+    label.checked {
+      border-color: #fb7299;
+      background: #fff0f4;
+    }
+    .name {
+      font-weight: bold;
+    }
+    .desc {
+      display: block;
+      margin-top: 3px;
+      font-size: 12px;
+      color: #9499a0;
+    }
+    input {
+      accent-color: #fb7299;
+      margin-right: 6px;
+    }
+  </style>
+</head>
+<body>
+  <h1>B站推荐屏蔽</h1>
+  <label data-mode="block">
+    <input type="radio" name="mode" value="block">
+    <span class="name">屏蔽推荐</span>
+    <span class="desc">不展示任何推荐内容，首页/播放页右侧全部清空。</span>
+  </label>
+  <label data-mode="anonymous">
+    <input type="radio" name="mode" value="anonymous">
+    <span class="name">匿名推荐</span>
+    <span class="desc">推荐照常展示，但请求不带 Cookie，算法拿不到你的画像。</span>
+  </label>
+  <label data-mode="off">
+    <input type="radio" name="mode" value="off">
+    <span class="name">关闭</span>
+    <span class="desc">完全停用本扩展，B站恢复原样。</span>
+  </label>
+  <script src="popup.js"></script>
+</body>
+</html>

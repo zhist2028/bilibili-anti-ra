@@ -1,17 +1,30 @@
 # B站推荐屏蔽 (Bilibili Anti-Feed)
 
-一个 Chrome 扩展：登录哔哩哔哩后，**仅向白名单内的接口发送 Cookie**，对 `api.bilibili.com` 的其余所有请求一律剥离 Cookie（以匿名身份发出），从而让推荐算法拿不到你的画像。推荐接口会被进一步**直接拦截**；页面 HTML 里服务端渲染（SSR）直出的推荐内容则通过样式隐藏。
+一个 Chrome 扩展：登录哔哩哔哩后，**仅向白名单内的接口发送 Cookie**，对 `api.bilibili.com` 的其余所有请求一律剥离 Cookie（以匿名身份发出），从而让推荐算法拿不到你的画像。
+
+## 三种模式
+
+点击扩展图标弹出面板切换，切换后所有 B 站页面自动刷新生效：
+
+| 模式 | 徽章 | 行为 |
+|---|---|---|
+| **屏蔽推荐**（默认） | 粉色`屏蔽` | 推荐接口被直接拦截，页面上 SSR 直出的推荐内容用 CSS 隐藏、初始数据用脚本清空——首页、播放页右侧完全没有推荐 |
+| **匿名推荐** | 蓝色`匿名` | 推荐内容照常展示，但所有推荐请求都不带 Cookie，看到的是匿名通用榜单而非个性化内容 |
+| **关闭** | 灰色`OFF` | 整套规则停用，B站完全恢复原样 |
+
+两种生效模式下，白名单之外的接口始终不带 Cookie（匿名），与模式无关。
 
 ## 工作原理
 
-三层防护（规则见 `rules.json`，隐藏样式见 `content.js`）：
+四层防护（规则见 `rules.json`，隐藏样式见 `hide.css`，数据清除见 `scrub.js`；后两者仅在"屏蔽推荐"模式下启用）：
 
 | 层级 | 机制 | 作用 |
 |---|---|---|
 | 白名单 | DNR `allow` 规则（priority 2） | 命中的接口正常携带 Cookie |
 | 删 Cookie | DNR `modifyHeaders` 移除 `cookie` 头（priority 1） | 作用于所有 `api.bilibili.com` 请求 + `www.bilibili.com` 页面文档请求；根据 Chrome 规则求值顺序，优先级低于 `allow` 时对白名单不生效 |
 | 拦截推荐 | DNR `block` 规则（priority 1） | 首页推荐 / 相关推荐 / 热门 / 排行榜 / 追番推荐接口直接请求失败 |
-| 隐藏 SSR 推荐 | content script 注入 CSS | 首页 HTML / 播放页 HTML 中服务端直出的推荐卡片无法靠网络层拦截，直接隐藏对应区域 |
+| 清除 SSR 推荐数据 | `scrub.js`（MAIN 世界，document_start） | 锁定 `__INITIAL_STATE__` 中的 `related` / `rcmdTabNames` / `rcmdTabData` 为空，使播放结束后的"相关推荐"面板和"自动连播推荐视频"失去数据源（合集连播走 `sectionsInfo`/`ugc_season`，不受影响） |
+| 隐藏 SSR 推荐 | `hide.css` 注入的样式 | 首页 HTML / 播放页 HTML 中服务端直出的推荐卡片无法靠网络层拦截，直接隐藏对应区域（含番剧播放页"相关推荐"与结束面板的空容器） |
 
 注意：DNR 的 `modifyHeaders` 要求扩展同时拥有**请求目标**和**请求发起方**的 host 权限，因此 `host_permissions` 必须是整个 `*.bilibili.com`，只写 `api.bilibili.com` 会导致删 Cookie 静默失效。
 
@@ -29,26 +42,28 @@
   - 点赞/投币/收藏的状态与操作（`archive/has/like|coins|relation|like|like/tripple`、`coin/add`、`x/v2|v3/fav/`）
   - 观看历史与进度心跳（`x/v2/history/report`、`click-interface/web/heartbeat`）
 
-## 被拦截/隐藏的内容
+## 被拦截/隐藏的内容（仅"屏蔽推荐"模式；"匿名推荐"模式下这些接口改以匿名身份请求）
 
 - `x/web-interface/(wbi/)?index/top/(feed/)?rcmd` — 首页推荐流（拦截 + 隐藏整个 `.feed2` 区域，含轮播、换一换、右下角"刷新内容"按钮）
 - `x/web-interface/index/ogv/rcmd` — 首页追番/影视推荐（拦截）
 - `x/web-interface/archive/related` — 播放页"接下来播放"（拦截 + 隐藏 `.recommend-list-v1` 等区域）
+- 播放结束后面板中的"相关推荐"与推荐自动连播 — 通过 `scrub.js` 清空 `__INITIAL_STATE__.related` 等数据根除，面板只保留重播/点赞/投币/收藏/分享，视频放完停在原页面不再跳转
+- 番剧播放页右侧"相关推荐" — 隐藏 `.plp-r [class*="recommend_wrap__"]`
 - `x/web-interface/popular*`、`x/web-interface/ranking*` — 热门、排行榜（拦截 + 隐藏页面列表）
 
 ## 安装
 
 1. 打开 `chrome://extensions`，开启右上角"开发者模式"。
 2. 点击"加载已解压的扩展程序"，选择本目录。
-3. 扩展图标上的徽章显示 `ON`/`OFF`，点击图标可随时启用/停用整套规则。
-4. 登录 B 站后使用。首页推荐区为空白；右上角头像、个人中心、视频播放与互动功能正常。
+3. 扩展图标上的徽章显示当前模式（`屏蔽`/`匿名`/`OFF`），点击图标弹出面板可随时切换。
+4. 登录 B 站后使用。"屏蔽推荐"模式下首页推荐区为空白；右上角头像、个人中心、视频播放与互动功能正常。"匿名推荐"模式下首页仍有推荐，但内容是匿名的通用榜单。
 
 ## 自定义
 
 - **加白名单**：在 `rules.json` 里复制一条 `allow` 规则，换一个新的未使用的 `id` 和你的 `regexFilter`。注意正则走 RE2 语法，**不支持 lookahead**；路径锚定写法参考现有规则（结尾用 `([?/]|$)` 或 `([?]|$)` 防止前缀误伤，例如 `view` 与 `view/detail`、`archive/relation` 与 `archive/related` 的区分）。
 - **不想拦截某个推荐接口、只想匿名**：删掉对应的 `block` 规则即可（此时该接口会以匿名身份返回通用榜单）。
 - **想彻底放行某类接口**：把对应 `allow` 规则删掉，它就会回到"剥离 Cookie"的默认状态。
-- **调整隐藏区域**：编辑 `content.js` 里的 CSS 选择器。
+- **调整隐藏区域**：编辑 `hide.css` 里的 CSS 选择器。
 - 改完在 `chrome://extensions` 点扩展卡片上的"重新加载"。
 
 ## 预期行为与取舍
